@@ -1,1 +1,1 @@
-# Curso Spec Driven Development com Java e Claude realizado da Udemy
+# Curso Spec Driven Development com Java e Claude realizado na Udemy
