@@ -37,6 +37,30 @@ class MonthlyCashbackReportAcceptanceIT {
         }
 
         @Test
+        @DisplayName("The one where a member requests year 0 — the request is rejected")
+        void shouldRejectYearZero() throws Exception {
+            mockMvc.perform(get("/api/customers/{customerId}/cashback-reports/{year}/{month}", "customer-123", 0, 3)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @DisplayName("The one where a member requests a negative month — the request is rejected")
+        void shouldRejectNegativeMonth() throws Exception {
+            mockMvc.perform(get("/api/customers/{customerId}/cashback-reports/{year}/{month}", "customer-123", 2026, -1)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @DisplayName("The one where a member requests month 0 — the request is rejected")
+        void shouldRejectMonthZero() throws Exception {
+            mockMvc.perform(get("/api/customers/{customerId}/cashback-reports/{year}/{month}", "customer-123", 2026, 0)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
         @DisplayName("The one where a nonexistent customer requests their report — the request is rejected with 404")
         void shouldRejectNonexistentCustomer() throws Exception {
             mockMvc.perform(get("/api/customers/{customerId}/cashback-reports/{year}/{month}", "nonexistent-user", 2026, 3)

@@ -1,0 +1,93 @@
+openapi: 3.0.0
+info:
+  title: Cashback Rewards API
+  description: API for managing and reporting cashback rewards for customers.
+  version: 1.0.0
+
+paths:
+  /api/customers/{customerId}/cashback-reports/{year}/{month}:
+    get:
+      summary: Get monthly cashback report
+      description: Returns the cashback report for a specific customer for a given calendar month in their local timezone.
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          description: Unique identifier of the customer.
+          schema:
+            type: string
+        - name: year
+          in: path
+          required: true
+          description: The calendar year (e.g., 2026).
+          schema:
+            type: integer
+            example: 2026
+        - name: month
+          in: path
+          required: true
+          description: The calendar month (1-12).
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 12
+            example: 3
+      responses:
+        '200':
+          description: Monthly cashback report retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonthlyCashbackReport'
+        '400':
+          description: Invalid request parameters (e.g., invalid month).
+        '404':
+          description: Customer not found.
+
+components:
+  schemas:
+    MonthlyCashbackReport:
+      type: object
+      properties:
+        customerId:
+          type: string
+          description: Unique identifier of the customer.
+        year:
+          type: integer
+          example: 2026
+        month:
+          type: integer
+          example: 3
+        totalNetCashback:
+          type: string
+          description: The net sum of all cashback entries for the month. Represented as a string to ensure BigDecimal precision.
+          example: "10.40"
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/CashbackEntry'
+        capReached:
+          type: boolean
+          description: Indicates if the monthly cashback cap was reached.
+          example: true
+        forfeitedAmount:
+          type: string
+          description: The amount of cashback forfeited due to the monthly cap. Represented as a string to ensure BigDecimal precision.
+          example: "3.00"
+
+    CashbackEntry:
+      type: object
+      properties:
+        postingDate:
+          type: string
+          format: date-time
+          description: The date and time the cashback was posted in the member's local timezone.
+          example: "2026-03-15T14:30:00Z"
+        merchant:
+          type: string
+          description: The name of the merchant where the transaction occurred.
+          example: "Grocery Store"
+        amount:
+          type: string
+          description: The cashback amount earned or clawed back. Negative values indicate refunds/clawbacks. Represented as a string to ensure BigDecimal precision.
+          example: "1.00"
