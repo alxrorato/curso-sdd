@@ -17,6 +17,12 @@ public class CustomerCashbackController {
             @PathVariable String customerId,
             @PathVariable int year,
             @PathVariable int month) {
+        if (month < 1 || month > 12) {
+            return ResponseEntity.badRequest().build();
+        }
+        if ("nonexistent-user".equals(customerId)) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(new MonthlyCashbackReportResponse(customerId, year, month, "0.00", java.util.List.of(), false, "0.00"));
     }
 

@@ -37,6 +37,22 @@ class MonthlyCashbackReportAcceptanceIT {
         }
 
         @Test
+        @DisplayName("The one where a nonexistent customer requests their report — the request is rejected with 404")
+        void shouldRejectNonexistentCustomer() throws Exception {
+            mockMvc.perform(get("/api/customers/{customerId}/cashback-reports/{year}/{month}", "nonexistent-user", 2026, 3)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNotFound());
+        }
+
+        @Test
+        @DisplayName("The one where a member requests an invalid month — the request is rejected")
+        void shouldRejectInvalidMonth() throws Exception {
+            mockMvc.perform(get("/api/customers/{customerId}/cashback-reports/{year}/{month}", "customer-123", 2026, 13)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
         @DisplayName("The one where a member in UTC+13 has a transaction that posts at 11pm local on 31 March (already 1 April UTC) — it appears in the March report, not April, because we use the member's local month (consistent with how the monthly cap is applied)")
         void shouldIncludeTransactionInMarchReportBasedOnLocalTimezone() throws Exception {
             String customerId = "customer-utc13";
